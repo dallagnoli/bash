@@ -1,97 +1,305 @@
 # -----------------------------
-# --- Startup -----------------
+# Startup (interactive session)
 # -----------------------------
 
-# Interactive tweaks
+# Check if the shell is interactive
 if [[ $- == *i* ]]; then
+
+    # Run fastfetch if available
     command -v fastfetch &>/dev/null && fastfetch
+
+    # Use visible bell instead of sound
     bind "set bell-style visible"
-    shopt -s checkwinsize
-    stty -ixon
+
+    # Enable case-insensitive tab completion
     bind "set completion-ignore-case on"
+
+    # Show all results if ambiguous completion
     bind "set show-all-if-ambiguous on"
+
+    # Automatically check terminal window size after each command
+    shopt -s checkwinsize
+
+    # Disable Ctrl+S/Ctrl+Q flow control
+    stty -ixon
+
 fi
 
-# Source global bashrc definitions
+
+# -----------------------------
+# Load system-wide bash settings
+# -----------------------------
+
+# Source system-wide bashrc file if it exists
 if [ -f /etc/bash.bashrc ]; then
     . /etc/bash.bashrc
+
+# Fallback to older bashrc location
 elif [ -f /etc/bashrc ]; then
     . /etc/bashrc
 fi
 
-# Source extended bash completion module
+
+# Load bash completion if available
 if [ -f /usr/share/bash-completion/bash_completion ]; then
     . /usr/share/bash-completion/bash_completion
+
 elif [ -f /etc/bash_completion ]; then
     . /etc/bash_completion
 fi
 
+
 # -----------------------------
-# --- History -----------------
+# History Configuration
 # -----------------------------
 
-# Number of history commands stored on disk
+# Maximum number of lines stored in the history file
 export HISTFILESIZE=10000
-# Number of history commands stored in memory
+
+# Number of lines stored in memory for the current session
 export HISTSIZE=500
-# Print date and time of execution
+
+# Format of timestamps in the command history
 export HISTTIMEFORMAT="%d/%m/%y %H:%M:%S - "
-# Ignore commands starting with a space, keep last duplicate
+
+# Avoid storing duplicate or space-prefixed commands
 export HISTCONTROL="erasedups:ignorespace"
-# Append to history, rather than overwriting
+
+# Append to history file rather than overwriting it
 shopt -s histappend
-# Append immediately, not at end of session
+
+# Immediately append each command to the history file
 export PROMPT_COMMAND="history -a"
 
+
 # -----------------------------
-# --- Environment -------------
+# Environment Variables
 # -----------------------------
 
-# Set up XDG folders
+# Define standard user data/config directories using XDG specification
 export XDG_DATA_HOME="$HOME/.local/share"
 export XDG_CONFIG_HOME="$HOME/.config"
 export XDG_STATE_HOME="$HOME/.local/state"
 export XDG_CACHE_HOME="$HOME/.cache"
 
-# Set the default editor
+# Set the default text editor
 export EDITOR="nano"
 export VISUAL="nano"
 
-# Custom colors for ls command
-export LS_COLORS="no=00:fi=00:di=00;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arj=01;31:*.taz=01;31:*.lzh=01;31:*.zip=01;31:*.z=01;31:*.Z=01;31:*.gz=01;31:*.bz2=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.jpg=01;35:*.jpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.avi=01;35:*.fli=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.ogg=01;35:*.mp3=01;35:*.wav=01;35:*.xml=00;31:"
+# Define custom file type colors for the 'ls' command
+export LS_COLORS="no=00:fi=00:di=00;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:ex=01;32:*.zip=01;31:*.tar=01;31:*.jpg=01;35:*.png=01;35:*.mp3=01;35:*.wav=01;35"
+
+# Define color sequences for the 'less' command output
+export LESS_TERMCAP_mb=$'\E[01;31m'
+export LESS_TERMCAP_md=$'\E[01;31m'
+export LESS_TERMCAP_me=$'\E[0m'
+export LESS_TERMCAP_se=$'\E[0m'
+export LESS_TERMCAP_so=$'\E[01;44;33m'
+export LESS_TERMCAP_ue=$'\E[0m'
+export LESS_TERMCAP_us=$'\E[01;32m'
+
 
 # -----------------------------
-# --- Aliases -----------------
+# Command Substitutions and Aliases
 # -----------------------------
 
-# Swap grep for ripgrep, if installed
-if command -v rg &> /dev/null; then
-    alias grep="rg"
-fi
+# Use 'rg' (ripgrep) instead of 'grep' if available
+command -v rg &>/dev/null && alias grep="rg"
 
-# Swap rm for trash-cli, for security, if installed
-if command -v trash &> /dev/null; then
-    alias rm="trash -v"
-fi
+# Use 'trash' instead of 'rm' to prevent accidental deletion
+command -v trash &>/dev/null && alias rm="trash -v"
 
-# Enables fuzzy yay, if yay is installed
-if command -v yay &> /dev/null; then
+# Define 'yayf' as a fuzzy search installer using yay and fzf
+if command -v yay &>/dev/null && command -v fzf &>/dev/null; then
     alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S --noconfirm --needed"
 fi
 
-# Quick shortcuts
-alias nano="sudo nano"
+# Use zoxide if available for fast directory jumping
+if command -v zoxide &>/dev/null; then
+    alias cd="z"
+    command -v fzf &>/dev/null && alias cdi="zi"
+fi
+
+
+# -----------------------------
+# Directory Navigation Aliases
+# -----------------------------
+
+# Allow use of "..", "...", etc. for directory traversal
+alias ..="cd .."
+alias ...="cd ../.."
+alias ....="cd ../../.."
+alias .....="cd ../../../.."
+
+# Create directories recursively by default
 alias mkdir="mkdir -p"
 alias mk="mkdir"
-alias cp="cp -rf"
+
+# Clear the terminal screen
 alias cl="clear"
+
+
+# -----------------------------
+# File and Permission Aliases
+# -----------------------------
+
+# Safer default copy command
+alias cp="cp -rf"
+
+# Shorter chmod commands for common permission modes
+alias mx="chmod a+x"
+alias 000="chmod -R 000"
+alias 644="chmod -R 644"
+alias 666="chmod -R 666"
+alias 755="chmod -R 755"
+alias 777="chmod -R 777"
+
+# Use raw /bin/rm when needed with verbose and recursive flags
+alias rmd="/bin/rm -rfv"
+
+# Short grep alias
 alias gr="grep"
 
+
 # -----------------------------
-# --- Final Call --------------
+# Utility Functions
 # -----------------------------
 
-# Init starship prompt
+# Create a directory and enter it
+mkcd() {
+    mkdir "$1"
+    cd "$1"
+}
+
+
+# Show the last two directories in the current path
+pwdtail() {
+    pwd | awk -F/ '{nlast = NF -1; print $nlast"/"$NF}'
+}
+
+
+# Extract various archive formats automatically
+xt() {
+    for archive in "$@"; do
+
+        if [ ! -f "$archive" ]; then
+            echo "'$archive' is not a valid file!" >&2
+            continue
+        fi
+
+        case "$archive" in
+            *.tar.bz2|*.tbz2)     tar -xvjf "$archive" ;;
+            *.tar.gz|*.tgz)       tar -xvzf "$archive" ;;
+            *.tar.xz)             tar -xvJf "$archive" ;;
+            *.tar.zst)            tar --use-compress-program=unzstd -xvf "$archive" ;;
+            *.tar)                tar -xvf "$archive" ;;
+            *.bz2)                bunzip2 "$archive" ;;
+            *.gz)                 gunzip "$archive" ;;
+            *.xz)                 unxz "$archive" ;;
+            *.zst)                unzstd "$archive" ;;
+            *.lzma)               unlzma "$archive" ;;
+            *.zip)                unzip "$archive" ;;
+            *.rar)                unrar x "$archive" ;;
+            *.7z)                 7z x "$archive" ;;
+            *) echo "don't know how to extract: '$archive'" >&2 ;;
+        esac
+
+    done
+}
+
+
+# Detect Linux distribution and standardize its name
+distro() {
+    local dtype="unknown"
+
+    if [ -r /etc/os-release ]; then
+        . /etc/os-release
+        for id in "$ID" $ID_LIKE; do
+            case $id in
+                fedora|rhel|centos) dtype="redhat"; break ;;
+                sles|opensuse*)     dtype="suse"; break ;;
+                ubuntu|debian)      dtype="debian"; break ;;
+                gentoo)             dtype="gentoo"; break ;;
+                arch|manjaro)       dtype="arch"; break ;;
+                slackware)          dtype="slackware"; break ;;
+            esac
+        done
+    fi
+
+    echo "$dtype"
+}
+
+DISTRO=$(distro)
+
+case "$DISTRO" in
+    redhat|arch)
+        alias cat="bat"
+        ;;
+    *)
+        alias cat="batcat"
+        alias bat="batcat"
+        ;;
+esac
+
+
+# Show internal and external IP addresses
+whatsmyip() {
+    echo -n "Internal IP: "
+    ip route get 1.1.1.1 2>/dev/null | awk '/src/ { print $7; exit }'
+
+    echo -n "External IP: "
+    if command -v curl &>/dev/null; then
+        curl -s -4 ifconfig.me
+    elif command -v wget &>/dev/null; then
+        wget -qO- -4 ifconfig.me
+    else
+        echo "No curl or wget installed"
+    fi
+}
+
+
+# Git add and commit with message
+gcom() {
+    git add .
+    git commit -m "$1"
+}
+
+# Git add, commit and push with message
+lazyg() {
+    git add .
+    git commit -m "$1"
+    git push
+}
+
+# Create a symbolic link with full path
+slk() {
+    PWD=$(pwd)
+    ln -sf $PWD/$1 $2
+}
+
+
+# -----------------------------
+# Key Bindings and Startup Hooks
+# -----------------------------
+
+# Bind Ctrl+F to run the 'zi' command if shell is interactive
+if [[ $- == *i* ]]; then
+    bind '"\C-f":"zi\n"'
+fi
+
+
+# Update PATH with local directories
+export PATH="$HOME/.local/bin:$HOME/.cargo/bin:$HOME/.local/share/flatpak/exports/bin:/var/lib/flatpak/exports/bin:$PATH"
+
+
+# Initialize Starship prompt
 eval "$(starship init bash)"
-# Init zoxide command
+
+# Initialize zoxide command
 eval "$(zoxide init bash)"
+
+
+# Automatically start graphical session if at TTY1
+if [[ -z $DISPLAY ]] && [[ $(tty) == /dev/tty1 ]]; then
+    exec startx
+fi
