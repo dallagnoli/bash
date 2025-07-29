@@ -138,6 +138,18 @@ alias mk="mkdir"
 # Clear the terminal screen
 alias cl="clear"
 
+# Basic colored listing, show all including hidden
+alias ls="ls -aFh --color=always"
+
+# Long listing, human-readable sizes (sem ocultos)
+alias ll="ls -l"
+
+# List only directories
+alias ldir="ls -l | egrep '^d'"
+
+# List only files
+alias lf="ls -l | egrep -v '^d'"            
+
 
 # -----------------------------
 # File and Permission Aliases
