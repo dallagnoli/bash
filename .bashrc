@@ -64,15 +64,34 @@ export LS_COLORS="no=00:fi=00:di=00;34:ln=01;36:pi=40;33:so=01;35:do=01;35:bd=40
 # --- Aliases -----------------
 # -----------------------------
 
+# Swap grep for ripgrep, if installed
 if command -v rg &> /dev/null; then
     alias grep="rg"
 fi
 
+# Swap rm for trash-cli, for security, if installed
 if command -v trash &> /dev/null; then
     alias rm="trash -v"
 fi
 
-alias snano="sudo nano"
-alias cp="cp -rf"
+# Enables fuzzy yay, if yay is installed
+if command -v yay &> /dev/null; then
+    alias yayf="yay -Slq | fzf --multi --preview 'yay -Sii {1}' --preview-window=down:75% | xargs -ro yay -S --noconfirm --needed"
+fi
+
+# Quick shortcuts
+alias nano="sudo nano"
 alias mkdir="mkdir -p"
 alias mk="mkdir"
+alias cp="cp -rf"
+alias cl="clear"
+alias gr="grep"
+
+# -----------------------------
+# --- Final Call --------------
+# -----------------------------
+
+# Init starship prompt
+eval "$(starship init bash)"
+# Init zoxide command
+eval "$(zoxide init bash)"
