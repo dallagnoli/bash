@@ -103,11 +103,8 @@ export LESS_TERMCAP_us=$'\E[01;32m'
 # Command Substitutions and Aliases
 # -----------------------------
 
-# Use 'rg' (ripgrep) instead of 'grep' if available
-command -v rg &>/dev/null && alias grep="rg"
-
 # Use 'trash' instead of 'rm' to prevent accidental deletion
-command -v trash &>/dev/null && alias rm="trash -v"
+command -v trash &>/dev/null && alias rm="trash"
 
 # Define 'yayf' as a fuzzy search installer using yay and fzf
 if command -v yay &>/dev/null && command -v fzf &>/dev/null; then
@@ -156,22 +153,24 @@ alias lf="ls -l | egrep -v '^d'"
 # -----------------------------
 
 # Safer default copy command
-alias cp="cp -rf"
+alias cp="sudo cp -rf"
 
 # Shorter chmod commands for common permission modes
-alias mx="chmod a+x"
-alias 000="chmod -R 000"
-alias 644="chmod -R 644"
-alias 666="chmod -R 666"
-alias 755="chmod -R 755"
-alias 777="chmod -R 777"
+alias mx="sudo chmod a+x"
+alias 000="sudo chmod -R 000"
+alias 644="sudo chmod -R 644"
+alias 666="sudo chmod -R 666"
+alias 755="sudo chmod -R 755"
+alias 777="sudo chmod -R 777"
 
 # Use raw /bin/rm when needed with verbose and recursive flags
-alias rmd="/bin/rm -rfv"
+alias rmd="sudo /bin/rm -rf"
 
 # Short grep alias
 alias gr="grep"
 
+alias mv="sudo mv"
+alias n="sudo nano"
 
 # -----------------------------
 # Utility Functions
