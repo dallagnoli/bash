@@ -176,6 +176,11 @@ alias n="sudo nano"
 # Utility Functions
 # -----------------------------
 
+# Connect to home-server
+srv() {
+    ssh gab-srv@192.168.100.86
+}
+
 # Create a directory and enter it
 mkcd() {
     mkdir "$1"
