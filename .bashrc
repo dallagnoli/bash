@@ -153,7 +153,7 @@ alias lf="ls -l | egrep -v '^d'"
 # -----------------------------
 
 # Safer default copy command
-alias cp="sudo cp -rf"
+alias cp="cp -rf"
 
 # Shorter chmod commands for common permission modes
 alias mx="sudo chmod a+x"
