@@ -2,7 +2,9 @@
 "$schema": "https://raw.githubusercontent.com/fastfetch-cli/fastfetch/dev/doc/json_schema.json",
 "logo": {
 "padding": {
-"top": 2
+"top": 2,
+"left": 2,
+"right": 3
 }
 },
 "display": {
